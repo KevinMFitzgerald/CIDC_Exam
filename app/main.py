@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
 
 from app.database import engine, SessionLocal
-from app.models import AuthorDB, Base
+from app.models import AuthorDB, Base,book
 from app.schemas import (
     AuthorCreate,
     AuthorRead,
@@ -104,19 +104,21 @@ def update_author(author_id:int,payload:AuthorCreate,db:Session=Depends(get_db))
 
 @app.post("api/book",response_model=BookRead,status_code=status.HTTP_201_CREATED)
 def create_author(payload:BookCreate,db:Session=Depends(get_db)):
-    author=BookDB(**payload.model_dump())
+    author=book(**payload.model_dump())
     db.add(author)
     commit_or_rollback(db,"author already exists")
     db.refresh(author)
     return author
 @app.get("/api/books",response_model=list[BookRead])
 def list_book(db:Session=Depends(get_db)):
-    stmt=select(Book).order_by(BookDB.id)
+    stmt=select(book).order_by(book.id)
     return db.execute(stmt).scalar().all()
 
-@app.get("/api/authors/{id}",response_model=BookRead)
-def get_author(id:int,db:Session=Depends(get_db)):
-    author=db.get(Book,id)
-    if not author:
+@app.get("/api/books/{id}",response_model=BookRead)
+def get_book(id:int,db:Session=Depends(get_db)):
+    book=db.get(book,id)
+    if not book:
         raise HTTPException(status_code=404,detail="author not found")
-    return author
+    return book
+
+
