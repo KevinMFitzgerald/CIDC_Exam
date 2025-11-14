@@ -11,7 +11,7 @@ class AuthorDB(Base):
     email:Mapped[str]=mapped_column(String(100),unique=True,nullable=False)
     year_started:Mapped[int]=mapped_column(Integer(1900-2100),nullable=False)
     
-book:mapped[list["bookdb"]]=relationship(back_populates="owner",cascade="all")
+book:Mapped[list["bookdb"]]=relationship(back_populates="owner",cascade="all")
 
 class bookdb(Base):
     __tablename__="Book"
@@ -20,3 +20,4 @@ class bookdb(Base):
     pages:Mapped[int]=mapped_column(int(10000),nullable=False)
     Author_id:Mapped[int]=mapped_column(ForeignKey("Author.id",ondelete="CASCADE"),nullable=False)
 
+Author=Mapped["AuthorDB"]=relationship(back_populates="book")
